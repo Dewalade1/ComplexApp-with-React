@@ -10,6 +10,7 @@ import Header from "./components/Header";
 import HomeLoggedIn from "./components/HomeLoggedIn";
 import HomeGuest from "./components/HomeGuest";
 import Terms from "./components/Terms";
+import ViewSinglePost from "./components/ViewSinglePost";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -32,6 +33,9 @@ function App() {
           </Route>
           <Route path="/create-post" exact>
             {LoggedIn ? <CreatePost /> : <HomeGuest/>}
+          </Route>
+          <Route path="/posts/:id">
+            <ViewSinglePost/>
           </Route>
         </Switch>
         <Footer />
