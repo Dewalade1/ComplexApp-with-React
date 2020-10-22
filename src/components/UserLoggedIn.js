@@ -29,7 +29,7 @@ function UserLoggedIn(props) {
       <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
       </Link>
-      <button onClick={handleLogout} className="btn btn-sm btn-secondary">
+      <button onClick={handleLogout} className="btn btn-sm btn-secondary btn-danger">
         Sign Out
       </button>
     </div>
