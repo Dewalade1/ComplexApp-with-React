@@ -4,7 +4,7 @@ import HeaderLoginForm from "./HeaderLoginForm";
 import UserLoggedIn from "./UserLoggedIn";
 
 function Header() {
-  const [LoggedIn, setLoggedIn] = useState();
+  const [LoggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("userToken")));
 
   return (
     <header className="header-bar bg-primary mb-3">

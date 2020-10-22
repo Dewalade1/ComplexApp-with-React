@@ -12,7 +12,9 @@ function HeaderLoginForm(props) {
       const response = await Axios.post("http://localhost:8080/login", { username, password });
 
       if (response.data) {
-        console.log(response.data);
+        localStorage.setItem("userToken", response.data.token);
+        localStorage.setItem("userName", response.data.username);
+        localStorage.setItem("userAvatar", response.data.avatar);
         props.setLoggedIn(true);
       } else {
         console.log("[Error] incorrect username or password.");
