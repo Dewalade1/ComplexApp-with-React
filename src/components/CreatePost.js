@@ -10,6 +10,7 @@ function CreatePost(props) {
     e.preventDefault();
     try {
       const response = await Axios.post("/create-post", { token: localStorage.getItem("userToken"), title, body });
+      props.addFlashMessage("Post Successful");
       props.history.push(`/posts/${response.data}`);
       console.log("[Success] New post was made!");
     } catch (e) {
@@ -33,7 +34,9 @@ function CreatePost(props) {
           <textarea onChange={(e) => setBody(e.target.value)} name="body" id="post-body" className="body-content tall-textarea form-control" type="text"></textarea>
         </div>
 
-        <button className="btn btn-primary">Save New Post</button>
+        <button className="btn btn-primary">
+          <i class="fas fa-check"></i> Save New Post
+        </button>
       </form>
     </Page>
   );
