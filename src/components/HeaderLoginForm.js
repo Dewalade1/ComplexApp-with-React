@@ -1,7 +1,7 @@
 import Axios from "axios";
 import React, { useState } from "react";
 
-function HeaderLoginForm() {
+function HeaderLoginForm(props) {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
 
@@ -13,6 +13,7 @@ function HeaderLoginForm() {
 
       if (response.data) {
         console.log(response.data);
+        props.setLoggedIn(true);
       } else {
         console.log("[Error] incorrect username or password.");
       }
