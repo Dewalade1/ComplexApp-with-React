@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
+import CustomContext from "../CustomContext";
+
 function UserLoggedIn(props) {
+  const { setLoggedIn } = useContext(CustomContext);
+
   function handleLogout(e) {
     e.preventDefault();
     try {
       localStorage.removeItem("userToken");
       localStorage.removeItem("userName");
       localStorage.removeItem("userAvatar");
-      props.setLoggedIn(false);
+      setLoggedIn(false);
     } catch (e) {
       console.log("[Error] Cannot log user out");
     }

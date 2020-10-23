@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "./App.css";
 import About from "./components/About";
 import CreatePost from "./components/CreatePost";
+import CustomContext from "./CustomContext";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomeLoggedIn from "./components/HomeLoggedIn";
@@ -24,28 +25,30 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <div className="App">
-        <FlashMessages messages={flashMessage} />
-        <Header LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />
-        <Switch>
-          <Route path="/" exact>
-            {LoggedIn ? <HomeLoggedIn /> : <HomeGuest />}
-          </Route>
-          <Route path="/about-us" exact>
-            <About />
-          </Route>
-          <Route path="/terms">
-            <Terms />
-          </Route>
-          <Route path="/create-post" exact>
-            {LoggedIn ? <CreatePost addFlashMessage={addFlashMessage} /> : <HomeGuest />}
-          </Route>
-          <Route path="/posts/:id">{LoggedIn ? <ViewSinglePost /> : <HomeGuest />}</Route>
-        </Switch>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <CustomContext.Provider value={{ addFlashMessage, LoggedIn, setLoggedIn }}>
+      <BrowserRouter>
+        <div className="App">
+          <FlashMessages messages={flashMessage} />
+          <Header />
+          <Switch>
+            <Route path="/" exact>
+              {LoggedIn ? <HomeLoggedIn /> : <HomeGuest />}
+            </Route>
+            <Route path="/about-us" exact>
+              <About />
+            </Route>
+            <Route path="/terms">
+              <Terms />
+            </Route>
+            <Route path="/create-post" exact>
+              {LoggedIn ? <CreatePost /> : <HomeGuest />}
+            </Route>
+            <Route path="/posts/:id">{LoggedIn ? <ViewSinglePost /> : <HomeGuest />}</Route>
+          </Switch>
+          <Footer />
+        </div>
+      </BrowserRouter>
+    </CustomContext.Provider>
   );
 }
 

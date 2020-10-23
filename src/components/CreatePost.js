@@ -1,16 +1,20 @@
-import React, { useState } from "react";
-import Page from "./Page";
+import React, { useContext, useState } from "react";
 import Axios from "axios";
 import { withRouter } from "react-router-dom";
+
+import Page from "./Page";
+import CustomContext from "../CustomContext";
 
 function CreatePost(props) {
   const [title, setTitle] = useState();
   const [body, setBody] = useState();
+  const {addFlashMessage} = useContext(CustomContext);
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       const response = await Axios.post("/create-post", { token: localStorage.getItem("userToken"), title, body });
-      props.addFlashMessage("Post Successful");
+      addFlashMessage("Post Successful");
       props.history.push(`/posts/${response.data}`);
       console.log("[Success] New post was made!");
     } catch (e) {
