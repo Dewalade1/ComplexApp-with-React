@@ -1,5 +1,5 @@
 import Axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import "./App.css";
@@ -17,6 +17,25 @@ import FlashMessages from "./components/FlashMessages";
 Axios.defaults.baseURL = "http://localhost:8080";
 
 function App() {
+
+  const initialState = {
+    loggedIn: Boolean(localStorage.getItem("userToken")),
+    flashMessages: [],
+  };
+  
+  function ourReducer(state, action) {
+    switch (action.type) {
+      case "login":
+        return {loggedIn: true, flashMessages: state.flashMessages}
+      case "logout":
+        return { loggedIn: false, flashMessages: state.flashMessages };
+      case "flashMessage":
+        return {loggedIn: state.loggedIn, flashMessages: state.flashMessages.concat(action.value)}
+    }
+  }
+
+  const [state, dispatch] = useReducer(ourReducer, initialState);
+
   const [LoggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("userToken")));
   const [flashMessage, setFlashMessages] = useState([]);
 
