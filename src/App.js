@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { useImmerReducer } from "use-immer";
-import React, { useReducer } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import StateContext from "./StateContext";
@@ -23,12 +23,18 @@ function App() {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("userToken")),
     flashMessages: [],
+    user: {
+      token: localStorage.getItem("userToken"),
+      username: localStorage.getItem("userName"),
+      avatar: localStorage.getItem("userAvatar")
+    }
   };
 
   function ourReducer(draft, action) {
     switch (action.type) {
       case "login":
         draft.loggedIn = true;
+        draft.user = action.userData;
         break;
       case "logout":
         draft.loggedIn = false;
@@ -37,18 +43,30 @@ function App() {
         draft.flashMessages.push(action.value);
         break;
       default:
-        draft;
+        return draft;
     }
   }
 
   const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+  useEffect(() => {
+    if (state.loggedIn) {
+      localStorage.setItem("userToken", state.user.token);
+      localStorage.setItem("userName", state.user.username);
+      localStorage.setItem("userAvatar", state.user.avatar);
+    } else {
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userAvatar");
+    }
+  }, state.loggedIn);
 
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
         <BrowserRouter>
           <div className="App">
-            <FlashMessages messages={state.flashMessage} />
+            <FlashMessages messages={state.flashMessages} />
             <Header />
             <Switch>
               <Route path="/" exact>

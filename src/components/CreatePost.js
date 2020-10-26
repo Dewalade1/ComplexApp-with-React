@@ -4,16 +4,18 @@ import { withRouter } from "react-router-dom";
 
 import Page from "./Page";
 import DispatchContext from "../DispatchContext";
+import StateContext from "../StateContext";
 
 function CreatePost(props) {
   const [title, setTitle] = useState();
   const [body, setBody] = useState();
   const appDispatch = useContext(DispatchContext);
+  const appState = useContext(StateContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const response = await Axios.post("/create-post", { token: localStorage.getItem("userToken"), title, body });
+      const response = await Axios.post("/create-post", { token: appState.user.token, title, body });
       appDispatch({ type: "flashMessage", value: "Post Successful!" });
       props.history.push(`/posts/${response.data}`);
       console.log("[Success] New post was made!");
@@ -39,7 +41,7 @@ function CreatePost(props) {
         </div>
 
         <button className="btn btn-primary">
-          <i class="fas fa-check"></i> Save New Post
+          <i className="fas fa-check"></i> Save New Post
         </button>
       </form>
     </Page>
