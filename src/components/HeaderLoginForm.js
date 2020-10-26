@@ -1,12 +1,12 @@
 import Axios from "axios";
 import React, { useContext, useState } from "react";
 
-import CustomContext from "../CustomContext";
+import DispatchContext from "../DispatchContext";
 
 function HeaderLoginForm(props) {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const {setLoggedIn} = useContext(CustomContext);
+  const appDispatch = useContext(DispatchContext);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -18,7 +18,7 @@ function HeaderLoginForm(props) {
         localStorage.setItem("userToken", response.data.token);
         localStorage.setItem("userName", response.data.username);
         localStorage.setItem("userAvatar", response.data.avatar);
-        setLoggedIn(true);
+        appDispatch({ type: "login" });
       } else {
         console.log("[Error] incorrect username or password.");
       }

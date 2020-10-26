@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 import HeaderLoginForm from "./HeaderLoginForm";
 import UserLoggedIn from "./UserLoggedIn";
-import CustomContext from "../CustomContext";
+import StateContext from "../StateContext";
 
 function Header(props) {
-  const { LoggedIn } = useContext(CustomContext);
+  const appState = useContext(StateContext);
 
   return (
     <header className="header-bar bg-primary mb-3">
@@ -16,7 +16,7 @@ function Header(props) {
             ComplexApp<i className="fas fa-pen-alt"></i>
           </Link>
         </h4>
-        {LoggedIn ? <UserLoggedIn /> : <HeaderLoginForm />}
+        {appState.loggedIn ? <UserLoggedIn /> : <HeaderLoginForm />}
       </div>
     </header>
   );

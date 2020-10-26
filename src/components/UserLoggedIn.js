@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
-import CustomContext from "../CustomContext";
+import DispatchContext from "../DispatchContext";
 
 function UserLoggedIn(props) {
-  const { setLoggedIn } = useContext(CustomContext);
+  const appDispatch = useContext(DispatchContext);
 
   function handleLogout(e) {
     e.preventDefault();
@@ -12,7 +12,7 @@ function UserLoggedIn(props) {
       localStorage.removeItem("userToken");
       localStorage.removeItem("userName");
       localStorage.removeItem("userAvatar");
-      setLoggedIn(false);
+      appDispatch({ type: "logout" });
     } catch (e) {
       console.log("[Error] Cannot log user out");
     }
