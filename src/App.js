@@ -9,13 +9,14 @@ import DispatchContext from "./DispatchContext";
 import "./App.css";
 import About from "./components/About";
 import CreatePost from "./components/CreatePost";
+import FlashMessages from "./components/FlashMessages";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomeLoggedIn from "./components/HomeLoggedIn";
 import HomeGuest from "./components/HomeGuest";
+import Profile from "./components/Profile";
 import Terms from "./components/Terms";
 import ViewSinglePost from "./components/ViewSinglePost";
-import FlashMessages from "./components/FlashMessages";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -26,8 +27,8 @@ function App() {
     user: {
       token: localStorage.getItem("userToken"),
       username: localStorage.getItem("userName"),
-      avatar: localStorage.getItem("userAvatar")
-    }
+      avatar: localStorage.getItem("userAvatar"),
+    },
   };
 
   function ourReducer(draft, action) {
@@ -81,6 +82,7 @@ function App() {
               <Route path="/create-post" exact>
                 {state.loggedIn ? <CreatePost /> : <HomeGuest />}
               </Route>
+              <Route path="/profile/:username"> {state.loggedIn ? <Profile /> : <HomeGuest />} </Route>
               <Route path="/posts/:id">{state.loggedIn ? <ViewSinglePost /> : <HomeGuest />}</Route>
             </Switch>
             <Footer />
