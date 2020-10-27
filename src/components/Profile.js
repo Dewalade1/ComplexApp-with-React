@@ -4,15 +4,16 @@ import { Link, useParams } from "react-router-dom";
 
 import Page from "./Page";
 import StateContext from "../StateContext";
+import ProfilePosts from "./ProfilePosts";
 
 function Profile() {
   const appState = useContext(StateContext);
   const { username } = useParams();
   const [profileData, setProfileData] = useState({
-      profileUsername: "...",
-      profileAvatar: appState.user.avatar,
-      isfollowing: false,
-      counts: {postCount: "", followingCount: "", followerCount: ""}
+    profileUsername: "...",
+    profileAvatar: appState.user.avatar,
+    isfollowing: false,
+    counts: { postCount: "", followingCount: "", followerCount: "" },
   });
 
   useEffect(() => {
@@ -31,7 +32,7 @@ function Profile() {
     <Page title="Your Profile">
       <h2>
         <img className="avatar-small" src={profileData.profileAvatar} alt="Your Avatar" /> {profileData.profileUsername}
-        <button className="btn btn-primary btn-sm ml-2">
+        <button className="btn btn-outline-primary btn-sm ml-2">
           Follow <i className="fas fa-user-plus"></i>
         </button>
       </h2>
@@ -48,20 +49,7 @@ function Profile() {
         </Link>
       </div>
 
-      <div className="list-group">
-        <Link to="#" className="list-group-item list-group-item-action">
-          <img className="avatar-tiny" src={appState.user.avatar} alt="avatar of creator of post #1" /> <strong>Example Post #1</strong>
-          <span className="text-muted small">on 2/10/2020 </span>
-        </Link>
-        <Link to="#" className="list-group-item list-group-item-action">
-          <img className="avatar-tiny" src={appState.user.avatar} alt="avatar of creator of post #2" /> <strong>Example Post #2</strong>
-          <span className="text-muted small">on 2/10/2020 </span>
-        </Link>
-        <Link to="#" className="list-group-item list-group-item-action">
-          <img className="avatar-tiny" src={appState.user.avatar} alt="avatar of creator of post #3" /> <strong>Example Post #3</strong>
-          <span className="text-muted small">on 2/10/2020 </span>
-        </Link>
-      </div>
+      <ProfilePosts />
     </Page>
   );
 }

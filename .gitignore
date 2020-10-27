@@ -10,7 +10,7 @@
 /build
 
 #Secret files
-secrets.txt
+my-secrets.txt
 
 # misc
 .DS_Store
