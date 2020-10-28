@@ -5,7 +5,7 @@ function Page(props) {
   useEffect(() => {
     document.title = `${props.title} | ComplexApp`;
     window.scrollTo(0, 0);
-  }, []); // [] means not watching for anything in particular
+  }, [props.title]); // [] means not watching for anything in particular
 
   return <Container wide={props.wide}>{props.children}</Container>;
 }

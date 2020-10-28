@@ -34,7 +34,7 @@ function ViewSinglePost() {
   const formatedDate = `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`;
 
   return (
-    <Page title="Placeholder Title">
+    <Page title={post.title}>
       <div className="d-flex justify-content-between">
         <h2>{post.title}</h2>
         <span className="pt-2">
@@ -48,10 +48,10 @@ function ViewSinglePost() {
       </div>
 
       <p className="text-muted small mb-4">
-        <Link to="#">
+        <Link to={`/profile/${post.author.username}`}>
           <img className="avatar-tiny" src={post.author.avatar} alt="Post Creator's avatar" />
         </Link>
-        Posted by <Link to="#">{post.author.username}</Link> on {formatedDate}
+        {" "} <Link to={`/profile/${post.author.username}`}>{post.author.username}</Link> | {formatedDate}
       </p>
 
       <div className="body-content">{post.body}</div>
