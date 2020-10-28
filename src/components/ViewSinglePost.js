@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import Page from "./Page";
+import LoadingIcon from "./LoadingIcon";
 
 function ViewSinglePost() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ function ViewSinglePost() {
     return (
       <Page title="Post">
         {" "}
-        <div>Loading...</div>
+        <LoadingIcon />
       </Page>
     );
 
@@ -50,8 +51,8 @@ function ViewSinglePost() {
       <p className="text-muted small mb-4">
         <Link to={`/profile/${post.author.username}`}>
           <img className="avatar-tiny" src={post.author.avatar} alt="Post Creator's avatar" />
-        </Link>
-        {" "} <Link to={`/profile/${post.author.username}`}>{post.author.username}</Link> | {formatedDate}
+        </Link>{" "}
+        <Link to={`/profile/${post.author.username}`}>{post.author.username}</Link> | {formatedDate}
       </p>
 
       <div className="body-content">{post.body}</div>
