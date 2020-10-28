@@ -1,12 +1,42 @@
-import React from "react";
+import Axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+
 import Page from "./Page";
-import { Link } from "react-router-dom";
 
 function ViewSinglePost() {
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [post, setPost] = useState();
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const response = await Axios.get(`/post/${id}`);
+        setPost(response.data);
+        setIsLoading(false);
+      } catch (e) {
+        console.log("[Error] Post cannot be displayed");
+      }
+    }
+    fetchPost();
+  }, []);
+
+  if (isLoading)
+    return (
+      <Page title="Post">
+        {" "}
+        <div>Loading...</div>
+      </Page>
+    );
+
+  const date = new Date(post.createdDate);
+  const formatedDate = `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`;
+
   return (
     <Page title="Placeholder Title">
       <div className="d-flex justify-content-between">
-        <h2>Example Post Title</h2>
+        <h2>{post.title}</h2>
         <span className="pt-2">
           <Link to="#" className="text-primary mr-2" title="Edit">
             <i className="fas fa-edit"></i>
@@ -19,17 +49,12 @@ function ViewSinglePost() {
 
       <p className="text-muted small mb-4">
         <Link to="#">
-          <img className="avatar-tiny" src={localStorage.getItem("userAvatar")} alt="Post Creator's avatar" />
+          <img className="avatar-tiny" src={post.author.avatar} alt="Post Creator's avatar" />
         </Link>
-  Posted by <Link to="#">{localStorage.getItem("userName")}</Link> on 2/10/2020
+        Posted by <Link to="#">{post.author.username}</Link> on {formatedDate}
       </p>
 
-      <div className="body-content">
-        <p>
-          Lorem ipsum dolor sit <strong>example</strong> post adipisicing elit. Iure ea at esse, tempore qui possimus soluta impedit natus voluptate, sapiente saepe modi est pariatur. Aut voluptatibus aspernatur fugiat asperiores at.
-        </p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae quod asperiores corrupti omnis qui, placeat neque modi, dignissimos, ab exercitationem eligendi culpa explicabo nulla tempora rem? Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure ea at esse, tempore qui possimus soluta impedit natus voluptate, sapiente saepe modi est pariatur. Aut voluptatibus aspernatur fugiat asperiores at.</p>
-      </div>
+      <div className="body-content">{post.body}</div>
     </Page>
   );
 }

@@ -30,7 +30,7 @@ function ProfilePosts() {
         const dateFormated = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
         return (
-          <Link key={post._id} to={`/post/${post._id}`} className="list-group-item list-group-item-action">
+          <Link key={post._id} to={`/posts/${post._id}`} className="list-group-item list-group-item-action">
             <img className="avatar-tiny" src={post.author.avatar} alt="avatar of creator of post #1" /> <strong>{post.title}</strong>
             <span className="text-muted small"> on {dateFormated}</span>
           </Link>

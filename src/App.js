@@ -44,7 +44,7 @@ function App() {
         draft.flashMessages.push(action.value);
         break;
       default:
-        return draft;
+        return;
     }
   }
 
@@ -60,7 +60,7 @@ function App() {
       localStorage.removeItem("userName");
       localStorage.removeItem("userAvatar");
     }
-  }, state.loggedIn);
+  }, [state.loggedIn]);
 
   return (
     <StateContext.Provider value={state}>
