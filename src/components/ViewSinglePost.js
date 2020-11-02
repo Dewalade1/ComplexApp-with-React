@@ -2,6 +2,7 @@ import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import ReactTooltip from "react-tooltip";
 
 import Page from "./Page";
 import LoadingIcon from "./LoadingIcon";
@@ -46,12 +47,15 @@ function ViewSinglePost() {
       <div className="d-flex justify-content-between">
         <h2>{post.title}</h2>
         <span className="pt-2">
-          <Link to="#" className="text-primary mr-2" title="Edit">
+          <Link to="#" data-tip="Edit" data-for="edit" className="text-primary mr-2">
             <i className="fas fa-edit"></i>
           </Link>
-          <Link className="delete-post-button text-danger" title="Delete">
+          <ReactTooltip id="edit" className="custom-tooltip" />
+          {"  "}
+          <Link to="#" data-tip="Delete" data-for="delete" className="delete-post-button text-danger">
             <i className="fas fa-trash"></i>
           </Link>
+          <ReactTooltip id="delete" className="custom-tooltip" />
         </span>
       </div>
 
@@ -63,7 +67,7 @@ function ViewSinglePost() {
       </p>
 
       <div className="body-content">
-        <ReactMarkdown source={post.body} allowedTypes={["paragraph", "strong", "emphasis", "text", "Heading", "list", "listItem"]}/>
+        <ReactMarkdown source={post.body} allowedTypes={["paragraph", "strong", "emphasis", "text", "Heading", "list", "listItem"]} />
       </div>
     </Page>
   );
