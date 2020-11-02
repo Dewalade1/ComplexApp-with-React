@@ -17,15 +17,22 @@ function Profile() {
   });
 
   useEffect(() => {
+
+    const ourCancelToken = Axios.CancelToken.source();
+
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token });
+        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token, CancelToken: ourCancelToken.token });
         setProfileData(response.data);
       } catch (e) {
-        console.log("[Error] Could not fetch data");
+        console.log("[Error] Could not fetch data or user left the page before load was completed");
       }
     }
     fetchData();
+
+    return ( () => {
+      ourCancelToken.cancel();
+    })
   }, []);
 
   return (

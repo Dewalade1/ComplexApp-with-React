@@ -10,17 +10,23 @@ function ProfilePosts() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
+
+    const ourCancelToken = Axios.CancelToken.source();
     async function fetchPosts() {
       try {
-        const response = await Axios.get(`/profile/${username}/posts`);
+        const response = await Axios.get(`/profile/${username}/posts`, {cancelToken: ourCancelToken.token});
         setPosts(response.data);
         setIsLoading(false);
       } catch (e) {
         setIsLoading(true);
-        console.log("[Error] Couldn't load posts");
+        console.log("[Error] Couldn't load posts or the request was cancelled");
       }
     }
     fetchPosts();
+
+    return (() => {
+      ourCancelToken.cancel();
+    })
   }, []);
 
   if (isLoading) return <LoadingIcon />;
