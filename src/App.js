@@ -9,6 +9,7 @@ import DispatchContext from "./DispatchContext";
 import "./App.css";
 import About from "./components/About";
 import CreatePost from "./components/CreatePost";
+import EditPost from "./components/EditPost";
 import FlashMessages from "./components/FlashMessages";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -82,8 +83,13 @@ function App() {
               <Route path="/create-post" exact>
                 {state.loggedIn ? <CreatePost /> : <HomeGuest />}
               </Route>
-              <Route path="/profile/:username"> {state.loggedIn ? <Profile /> : <HomeGuest />} </Route>
-              <Route path="/posts/:id">{state.loggedIn ? <ViewSinglePost /> : <HomeGuest />}</Route>
+              <Route path="/posts/:id/edit" exact>
+                {state.loggedIn ? <EditPost /> : <HomeGuest />}
+              </Route>
+              <Route path="/profile/:username">{state.loggedIn ? <Profile /> : <HomeGuest />}</Route>
+              <Route path="/posts/:id" exact>
+                {state.loggedIn ? <ViewSinglePost /> : <HomeGuest />}
+              </Route>
             </Switch>
             <Footer />
           </div>
