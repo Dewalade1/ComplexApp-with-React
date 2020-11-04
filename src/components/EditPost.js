@@ -1,14 +1,15 @@
 import Axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, withRouter } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import StateContext from "../StateContext";
 import DispatchContext from "../DispatchContext";
 
 import Page from "./Page";
 import LoadingIcon from "./LoadingIcon";
+import PageNotFound from "./PageNotFound";
 
-function EditPost() {
+function EditPost(props) {
   const appState = useContext(StateContext);
   const appDispatch = useContext(DispatchContext);
 
@@ -28,6 +29,7 @@ function EditPost() {
     id: useParams().id,
     sendCount: 0,
     EditButtonText: "Save Edit",
+    pageNotFound: false,
   };
   function ourReducer(draft, action) {
     switch (action.type) {
@@ -71,6 +73,9 @@ function EditPost() {
           draft.title.errorMessage = "Title field cannot be empty";
         }
         break;
+      case "pageNotFound":
+        draft.pageNotFound = true;
+        break;
       default:
         return draft;
     }
@@ -90,7 +95,15 @@ function EditPost() {
     async function fetchPost() {
       try {
         const response = await Axios.get(`/post/${state.id}`, { cancelToken: ourRequest.token });
-        dispatch({ type: "fetchComplete", value: response.data });
+        if (response.data) {
+          dispatch({ type: "fetchComplete", value: response.data });
+          if (appState.user.username != response.data.author.username) {
+            appDispatch({ type: "flashMessage", value: ["alert-warning", "Sorry, You do not have permission to edit this post"] });
+            props.history.push(`/posts/${state.id}`);
+          }
+        } else {
+          dispatch({ type: "pageNotFound" });
+        }
       } catch (e) {
         console.log("[Error] Post cannot be displayed or the request was cancelled");
       }
@@ -111,9 +124,10 @@ function EditPost() {
         try {
           await Axios.post(`/post/${state.id}/edit`, { title: state.title.value, body: state.body.value, token: appState.user.token }, { cancelToken: ourRequest.token });
           dispatch({ type: "saveRequestFinished" });
-          appDispatch({ type: "flashMessage", value: "Update Successful!" });
+          appDispatch({ type: "flashMessage", value: ["alert-success", "Update Successful!"] });
         } catch (e) {
           console.log("[Error] Post could not be sent or the request was cancelled");
+          appDispatch({ type: "flashMessage", value: ["alert-danger", "Update Failed!"] });
         }
       }
       sendPost();
@@ -123,6 +137,8 @@ function EditPost() {
       };
     }
   }, [state.sendCount]);
+
+  if (state.pageNotFound) return <PageNotFound />;
 
   if (state.fetchingData)
     return (
@@ -134,7 +150,12 @@ function EditPost() {
 
   return (
     <Page title="Edit post">
-      <form onSubmit={handleSubmit}>
+      <Link className="small font-weight-bold" to={`/posts/${state.id}`}>
+        {" "}
+        <i className="fas fa-angle-double-left"></i> Back to Post
+      </Link>
+
+      <form className="mt-3" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="post-title" className="text-muted mb-1">
             <small>Title</small>
@@ -159,4 +180,4 @@ function EditPost() {
   );
 }
 
-export default EditPost;
+export default withRouter(EditPost);

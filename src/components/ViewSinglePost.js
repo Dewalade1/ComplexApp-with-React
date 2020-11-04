@@ -6,6 +6,7 @@ import ReactTooltip from "react-tooltip";
 
 import Page from "./Page";
 import LoadingIcon from "./LoadingIcon";
+import PageNotFound from "./PageNotFound";
 
 function ViewSinglePost() {
   const { id } = useParams();
@@ -30,6 +31,8 @@ function ViewSinglePost() {
       ourRequest.cancel();
     };
   }, []);
+
+  if (!isLoading && !post) return <PageNotFound />;
 
   if (isLoading)
     return (

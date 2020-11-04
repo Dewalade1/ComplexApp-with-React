@@ -66,6 +66,10 @@ body {
   margin-bottom: 1.75rem;
 }
 
+.icon {
+  color: #007bff;
+}
+
 .input-dark {
   background-color: #444;
   border-color: transparent;

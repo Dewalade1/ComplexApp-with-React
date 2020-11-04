@@ -13,8 +13,9 @@ function UserLoggedIn(props) {
     e.preventDefault();
     try {
       appDispatch({ type: "logout" });
+      appDispatch({ type: "flashMessage", value: ["alert-success", "You have logged out!"] });
     } catch (e) {
-      console.log("[Error] Cannot log user out");
+      appDispatch({ type: "flashMessage", value: ["alert-danger", "Cannot log out"] });
     }
   }
 
@@ -37,7 +38,7 @@ function UserLoggedIn(props) {
       <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
       </Link>
-      <button onClick={handleLogout} className="btn btn-sm btn-secondary btn-danger">
+      <button onClick={handleLogout} className="btn btn-sm btn-danger">
         Sign Out
       </button>
     </div>

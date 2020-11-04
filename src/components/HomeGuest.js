@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import Page from "./Page";
+import React, { useState, useContext } from "react";
 import Axios from "axios";
 
+import Page from "./Page";
+import DispatchContext from "../DispatchContext";
+
 function HomeGuest() {
+  const appDispatch = useContext(DispatchContext);
   const [username, setUsername] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -12,9 +15,9 @@ function HomeGuest() {
 
     try {
       await Axios.post("/register", { username, email, password });
-      console.log("[Success] User has been registered.");
+      appDispatch({ type: "flashMessage", value: ["alert-success", "Congrats! Registeration Successful!"] });
     } catch (e) {
-      console.log("[Error] User not registered.");
+      appDispatch({ type: "flashMessage", value: ["alert-danger", "Registeration Failed!"] });
     }
   }
 
@@ -22,6 +25,10 @@ function HomeGuest() {
     <Page title="Home" wide={true}>
       <div className="row align-items-center">
         <div className="col-lg-7 py-3 py-md-5">
+          <div className="text-center">
+            {" "}
+            <i className="icon fas fa-mail-bulk fa-9x"></i>
+          </div>
           <h1 className="display-3">
             <b>Remember Writing?</b>
           </h1>

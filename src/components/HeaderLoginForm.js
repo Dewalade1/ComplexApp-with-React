@@ -16,11 +16,12 @@ function HeaderLoginForm(props) {
 
       if (response.data) {
         appDispatch({ type: "login", userData: response.data });
+        appDispatch({ type: "flashMessage", value: ["alert-success", "Login Successful!"] });
       } else {
-        console.log("[Error] incorrect username or password.");
+        appDispatch({ type: "flashMessage", value: ["alert-danger", "Username or Password Incorrect!"] });
       }
     } catch (e) {
-      console.log("[Error] Couldn't Log user in");
+      appDispatch({ type: "flashMessage", value: ["alert-danger", "Login Failed!"] });
     }
   }
 

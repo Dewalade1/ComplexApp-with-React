@@ -3,9 +3,9 @@ import React from "react";
 function FlashMessages(props) {
   return (
     <div className="floating-alerts">
-      {props.messages.map((msg, index) => {
+      {props.messages.content.map((msg, index) => {
         return (
-          <div key={index} className="alert alert-success text-center floating-alert shadow-sm">
+          <div key={index} className={`alert ${props.messages.class} text-center floating-alert shadow-sm`}>
             {msg}
           </div>
         );

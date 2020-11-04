@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomeLoggedIn from "./components/HomeLoggedIn";
 import HomeGuest from "./components/HomeGuest";
+import PageNotFound from "./components/PageNotFound";
 import Profile from "./components/Profile";
 import Terms from "./components/Terms";
 import ViewSinglePost from "./components/ViewSinglePost";
@@ -24,7 +25,8 @@ Axios.defaults.baseURL = "http://localhost:8080";
 function App() {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("userToken")),
-    flashMessages: [],
+    flashMessages: {class: "", content: []},
+    flashMessageClass: "alert-success",
     user: {
       token: localStorage.getItem("userToken"),
       username: localStorage.getItem("userName"),
@@ -42,7 +44,8 @@ function App() {
         draft.loggedIn = false;
         break;
       case "flashMessage":
-        draft.flashMessages.push(action.value);
+        draft.flashMessages.class = action.value[0];
+        draft.flashMessages.content.push(action.value[1]);
         break;
       default:
         return;
@@ -89,6 +92,9 @@ function App() {
               <Route path="/profile/:username">{state.loggedIn ? <Profile /> : <HomeGuest />}</Route>
               <Route path="/posts/:id" exact>
                 {state.loggedIn ? <ViewSinglePost /> : <HomeGuest />}
+              </Route>
+              <Route>
+                <PageNotFound />
               </Route>
             </Switch>
             <Footer />
