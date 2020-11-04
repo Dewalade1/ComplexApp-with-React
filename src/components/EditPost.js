@@ -9,15 +9,18 @@ import Page from "./Page";
 import LoadingIcon from "./LoadingIcon";
 
 function EditPost() {
+  const appState = useContext(StateContext);
+  const appDispatch = useContext(DispatchContext);
+
   const originalState = {
     title: {
       value: "",
-      errors: false,
+      hasErrors: false,
       errorMessage: "",
     },
     body: {
       value: "",
-      errors: false,
+      hasErrors: false,
       errorMessage: "",
     },
     fetchingData: true,
@@ -34,14 +37,20 @@ function EditPost() {
         draft.fetchingData = false;
         break;
       case "titleChange":
+        draft.title.hasErrors = false;
         draft.title.value = action.value;
+        draft.title.errorMessage = "";
         break;
       case "bodyChange":
+        draft.body.hasErrors = false;
         draft.body.value = action.value;
+        draft.body.errorMessage = "";
         break;
       case "submitRequest":
-        draft.sendCount++;
-        draft.EditButtonText = "Saving...";
+        if (!draft.title.hasErrors && !draft.body.hasErrors) {
+          draft.sendCount++;
+          draft.EditButtonText = "Saving...";
+        }
         break;
       case "saveResquestStarted":
         draft.isSaving = true;
@@ -50,12 +59,28 @@ function EditPost() {
         draft.isSaving = false;
         draft.EditButtonText = "Save Edit";
         break;
+      case "bodyRules":
+        if (!action.value.trim()) {
+          draft.body.hasErrors = true;
+          draft.body.errorMessage = "Post must contain a body";
+        }
+        break;
+      case "titleRules":
+        if (!action.value.trim()) {
+          draft.title.hasErrors = true;
+          draft.title.errorMessage = "Title field cannot be empty";
+        }
+        break;
+      default:
+        return draft;
     }
   }
   const [state, dispatch] = useImmerReducer(ourReducer, originalState);
 
   function handleSubmit(e) {
     e.preventDefault();
+    dispatch({ type: "titleRules", value: state.title.value });
+    dispatch({ type: "bodyRules", value: state.body.value });
     dispatch({ type: "submitRequest" });
   }
 
@@ -77,9 +102,6 @@ function EditPost() {
     };
   }, []);
 
-  const appState = useContext(StateContext);
-  const appDispatch = useContext(DispatchContext);
-
   useEffect(() => {
     if (state.sendCount) {
       dispatch({ type: "saveRequestStarted" });
@@ -87,7 +109,7 @@ function EditPost() {
 
       async function sendPost() {
         try {
-          const response = await Axios.post(`/post/${state.id}/edit`, { title: state.title.value, body: state.body.value, token: appState.user.token }, { cancelToken: ourRequest.token });
+          await Axios.post(`/post/${state.id}/edit`, { title: state.title.value, body: state.body.value, token: appState.user.token }, { cancelToken: ourRequest.token });
           dispatch({ type: "saveRequestFinished" });
           appDispatch({ type: "flashMessage", value: "Update Successful!" });
         } catch (e) {
@@ -117,14 +139,16 @@ function EditPost() {
           <label htmlFor="post-title" className="text-muted mb-1">
             <small>Title</small>
           </label>
-          <input onChange={(e) => dispatch({ type: "titleChange", value: e.target.value })} autoFocus value={state.title.value} name="title" id="post-title" className="form-control form-control-lg form-control-title" type="text" placeholder="" autoComplete="off" />
+          <input onBlur={(e) => dispatch({ type: "titleRules", value: e.target.value })} onChange={(e) => dispatch({ type: "titleChange", value: e.target.value })} autoFocus value={state.title.value} name="title" id="post-title" className="form-control form-control-lg form-control-title" type="text" placeholder="" autoComplete="off" />
+          {state.title.hasErrors && <div className="alert alert-danger small liveValidateMessage"> {state.title.errorMessage}</div>}
         </div>
 
         <div className="form-group">
           <label htmlFor="post-body" className="text-muted mb-1 d-block">
             <small>Body Content</small>
           </label>
-          <textarea onChange={(e) => dispatch({ type: "bodyChange", value: e.target.value })} value={state.body.value} name="body" id="post-body" className="body-content tall-textarea form-control" type="text" />
+          <textarea onBlur={(e) => dispatch({ type: "bodyRules", value: e.target.value })} onChange={(e) => dispatch({ type: "bodyChange", value: e.target.value })} value={state.body.value} name="body" id="post-body" className="body-content tall-textarea form-control" type="text" />
+          {state.body.hasErrors && <div className="alert alert-danger small liveValidateMessage"> {state.body.errorMessage}</div>}
         </div>
 
         <button className="btn btn-outline-secondary" disabled={state.isSaving}>
