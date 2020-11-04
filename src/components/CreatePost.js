@@ -16,11 +16,12 @@ function CreatePost(props) {
     e.preventDefault();
     try {
       const response = await Axios.post("/create-post", { token: appState.user.token, title, body });
-      appDispatch({ type: "flashMessage", value: "Post Successful!" });
+      appDispatch({ type: "flashMessage", value: ["alert-success", "Post Successful!"] });
       props.history.push(`/posts/${response.data}`);
       console.log("[Success] New post was made!");
     } catch (e) {
       console.log("[Error] Could not post your new post.");
+      appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not make post"] });
     }
   }
   return (
