@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@sentry/react": "^5.27.3",
+    "@sentry/tracing": "^5.27.2",
     "axios": "^0.20.0",
     "immer": "^7.0.14",
     "react": "^16.14.0",
