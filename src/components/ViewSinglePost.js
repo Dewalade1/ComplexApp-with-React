@@ -1,14 +1,18 @@
 import Axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useParams, withRouter } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import ReactTooltip from "react-tooltip";
 
 import Page from "./Page";
 import LoadingIcon from "./LoadingIcon";
 import PageNotFound from "./PageNotFound";
+import StateContext from "../StateContext";
+import DispatchContext from "../DispatchContext";
 
-function ViewSinglePost() {
+function ViewSinglePost(props) {
+  const appState = useContext(StateContext);
+  const appDispatch = useContext(DispatchContext);
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [post, setPost] = useState();
@@ -45,6 +49,28 @@ function ViewSinglePost() {
   const date = new Date(post.createdDate);
   const formatedDate = `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`;
 
+  function isOwner() {
+    if (appState.loggedIn) {
+      return appState.user.username === post.author.username;
+    }
+    return false;
+  }
+
+  async function handleDelete() {
+    const deleteConfirmed = window.confirm("Posts cannot be recovered once deleted. Delete anyways?");
+    if (deleteConfirmed) {
+      try {
+        const response = await Axios.delete(`/post/${id}`, { data: { token: appState.user.token } });
+        if (response.data === "Success") {
+          appDispatch({ type: "flashMessage", value: ["alert-success", "Post successfully deleted"] });
+          props.history.push(`/profile/${appState.user.username}`);
+        }
+      } catch (e) {
+        appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not delete post"] });
+      }
+    }
+  }
+
   return (
     <Page title={post.title}>
       <div className="d-flex justify-content-between">
@@ -55,10 +81,14 @@ function ViewSinglePost() {
           </Link>
           <ReactTooltip id="edit" className="custom-tooltip" />
           {"  "}
-          <Link to="#" data-tip="Delete" data-for="delete" className="delete-post-button text-danger">
-            <i className="fas fa-trash"></i>
-          </Link>
-          <ReactTooltip id="delete" className="custom-tooltip" />
+          {isOwner() && (
+            <span>
+              <Link onClick={handleDelete} to="#" data-tip="Delete" data-for="delete" className="delete-post-button text-danger">
+                <i className="fas fa-trash"></i>
+              </Link>
+              <ReactTooltip id="delete" className="custom-tooltip" />
+            </span>
+          )}
         </span>
       </div>
 
@@ -70,10 +100,10 @@ function ViewSinglePost() {
       </p>
 
       <div className="body-content">
-        <ReactMarkdown source={post.body} allowedTypes={["paragraph", "strong", "emphasis", "text", "Heading", "list", "listItem"]} />
+        <ReactMarkdown source={post.body} allowedTypes={["paragraph", "strong", "emphasis", "text", "heading", "list", "listItem"]} />
       </div>
     </Page>
   );
 }
 
-export default ViewSinglePost;
+export default withRouter(ViewSinglePost);
