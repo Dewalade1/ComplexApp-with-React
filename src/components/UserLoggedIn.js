@@ -19,18 +19,23 @@ function UserLoggedIn(props) {
     }
   }
 
+  function SearchIconHandler(e) {
+    e.preventDefault();
+    appDispatch({ type: "openSearch" });
+  }
+
   return (
     <div className="flex-row my-3 my-md-0">
-      <Link data-tip="search" data-for="search" to="#" className="text-white mr-2 header-search-icon">
+      <Link onClick={SearchIconHandler} data-tip="search" data-for="search" to="#" className="text-white mr-2 header-search-icon">
         <i className="fas fa-search"></i>
       </Link>
-      <ReactTooltip id="search" className="custom-tooltip"/>
+      <ReactTooltip id="search" className="custom-tooltip" />
       {"  "}
       <span data-tip="Comment" data-for="comment" className="mr-2 header-chat-icon text-white">
         <i className="fas fa-comment"></i>
         <span className="chat-count-badge text-white"> </span>
       </span>
-      <ReactTooltip id="comment" className="custom-tooltip"/>
+      <ReactTooltip id="comment" className="custom-tooltip" />
       {"  "}
       <Link to={`/profile/${appState.user.username}`} className="mr-2">
         <img className="small-header-avatar" src={appState.user.avatar} alt="User Avatar" />

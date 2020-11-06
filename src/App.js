@@ -17,6 +17,7 @@ import HomeLoggedIn from "./components/HomeLoggedIn";
 import HomeGuest from "./components/HomeGuest";
 import PageNotFound from "./components/PageNotFound";
 import Profile from "./components/Profile";
+import Search from "./components/Search";
 import Terms from "./components/Terms";
 import ViewSinglePost from "./components/ViewSinglePost";
 
@@ -25,13 +26,14 @@ Axios.defaults.baseURL = "http://localhost:8080";
 function App() {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("userToken")),
-    flashMessages: {class: "", content: []},
+    flashMessages: { class: "", content: [] },
     flashMessageClass: "alert-success",
     user: {
       token: localStorage.getItem("userToken"),
       username: localStorage.getItem("userName"),
       avatar: localStorage.getItem("userAvatar"),
     },
+    isSearchOpen: false,
   };
 
   function ourReducer(draft, action) {
@@ -47,8 +49,14 @@ function App() {
         draft.flashMessages.class = action.value[0];
         draft.flashMessages.content.push(action.value[1]);
         break;
+      case "openSearch":
+        draft.isSearchOpen = true;
+        break;
+      case "closeSearch":
+        draft.isSearchOpen = false;
+        break;
       default:
-        return;
+        break;
     }
   }
 
@@ -97,6 +105,7 @@ function App() {
                 <PageNotFound />
               </Route>
             </Switch>
+            {state.isSearchOpen ? <Search /> : ''}
             <Footer />
           </div>
         </BrowserRouter>
