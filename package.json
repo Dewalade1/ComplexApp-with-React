@@ -13,6 +13,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "1.1.5",
     "react-tooltip": "^4.2.10",
+    "react-transition-group": "^4.4.1",
     "use-immer": "^0.4.1"
   },
   "scripts": {

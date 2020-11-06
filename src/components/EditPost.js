@@ -2,6 +2,8 @@ import Axios from "axios";
 import React, { useContext, useEffect } from "react";
 import { useParams, Link, withRouter } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
+import { CSSTransition } from "react-transition-group";
+
 import StateContext from "../StateContext";
 import DispatchContext from "../DispatchContext";
 
@@ -161,7 +163,9 @@ function EditPost(props) {
             <small>Title</small>
           </label>
           <input onBlur={(e) => dispatch({ type: "titleRules", value: e.target.value })} onChange={(e) => dispatch({ type: "titleChange", value: e.target.value })} autoFocus value={state.title.value} name="title" id="post-title" className="form-control form-control-lg form-control-title" type="text" placeholder="" autoComplete="off" />
-          {state.title.hasErrors && <div className="alert alert-danger small liveValidateMessage"> {state.title.errorMessage}</div>}
+          <CSSTransition in={state.title.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+            <div className="alert alert-danger small liveValidateMessage"> {state.title.errorMessage}</div>
+          </CSSTransition>
         </div>
 
         <div className="form-group">
@@ -169,7 +173,9 @@ function EditPost(props) {
             <small>Body Content</small>
           </label>
           <textarea onBlur={(e) => dispatch({ type: "bodyRules", value: e.target.value })} onChange={(e) => dispatch({ type: "bodyChange", value: e.target.value })} value={state.body.value} name="body" id="post-body" className="body-content tall-textarea form-control" type="text" />
-          {state.body.hasErrors && <div className="alert alert-danger small liveValidateMessage"> {state.body.errorMessage}</div>}
+          <CSSTransition in={state.body.hasErrors} timeout={330} unmountOnExit classNames="liveValidateMessage">
+            <div className="alert alert-danger small liveValidateMessage"> {state.body.errorMessage}</div>
+          </CSSTransition>
         </div>
 
         <button className="btn btn-outline-secondary" disabled={state.isSaving}>
