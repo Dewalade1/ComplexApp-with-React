@@ -1,24 +1,92 @@
-import React, { useState, useContext } from "react";
 import Axios from "axios";
+import React, { useState, useContext } from "react";
+import { useImmerReducer } from "use-immer";
+import { CSSTransition } from "react-transition-group";
 
 import Page from "./Page";
 import DispatchContext from "../DispatchContext";
+import StateContext from "../StateContext";
 
 function HomeGuest() {
   const appDispatch = useContext(DispatchContext);
-  const [username, setUsername] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const initialState = {
+    username: {
+      value: "",
+      hasErrors: false,
+      errorMessage: "",
+      isUnique: false,
+      checkCount: 0,
+    },
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+    email: {
+      value: "",
+      hasErrors: false,
+      errorMessage: "",
+      isUnique: false,
+      checkCount: 0,
+    },
 
-    try {
-      await Axios.post("/register", { username, email, password });
-      appDispatch({ type: "flashMessage", value: ["alert-success", "Congrats! Registeration Successful!"] });
-    } catch (e) {
-      appDispatch({ type: "flashMessage", value: ["alert-danger", "Registeration Failed!"] });
+    password: {
+      value: "",
+      hasErrors: false,
+      errorMessage: "",
+    },
+    isLoggingIn: false,
+    registrationButton: "Sign up for ComplexApp",
+    submitCount: 0,
+  };
+
+  function ourReducer(draft, action) {
+    switch (action.type) {
+      case "usernameImmediately":
+        draft.username.hasErrors = false;
+        draft.username.value = action.value;
+        if (draft.username.value.length > 30) {
+          draft.username.hasErrors = true;
+          draft.username.errorMessage = "Username must be less than 30 characters long.";
+        }
+
+        if (draft.username.value && !/^([a-zA-Z0-9]+)$/.test(draft.username.value)) {
+          draft.username.hasErrors = true;
+          draft.username.errorMessage = "Username can only contain letters and numbers.";
+        }
+        break;
+      case "usernameAfterDelay":
+        break;
+      case "usernameUniqueResults":
+        break;
+      case "emailImmediately":
+        draft.email.hasErrors = false;
+        draft.email.value = action.value;
+        break;
+      case "emailAfterDelay":
+        break;
+      case "emailUniqueResults":
+        break;
+      case "passwordImmediately":
+        break;
+      case "passwordAfterDelay":
+        break;
+      case "registrationStarted":
+        draft.registrationButton = "Registering new user...";
+      case "loginrequeststarted":
+        draft.isLoggingIn = true;
+        draft.registrationButton = "Logging in...";
+      case "loginrequestfinished":
+        draft.isLoggingIn = false;
+        draft.registrationButton = "Welcome...";
+        break;
+      case "submitForm":
+        break;
+      default:
+        return draft;
     }
+  }
+
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+  function handleSubmit(e) {
+    e.preventDefault();
   }
 
   return (
@@ -40,22 +108,25 @@ function HomeGuest() {
               <label htmlFor="username-register" className="text-muted mb-1">
                 <small>Username</small>
               </label>
-              <input onChange={(e) => setUsername(e.target.value)} id="username-register" name="username" className="form-control" type="text" placeholder="Pick a username" autoComplete="off" />
+              <input onChange={(e) => dispatch({ type: "usernameImmediately", value: e.target.value })} id="username-register" name="username" className="form-control" type="text" placeholder="Pick a username" autoComplete="off" />
+              <CSSTransition in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.username.errorMessage}</div>
+              </CSSTransition>
             </div>
             <div className="form-group">
               <label htmlFor="email-register" className="text-muted mb-1">
                 <small>Email</small>
               </label>
-              <input onChange={(e) => setEmail(e.target.value)} id="email-register" name="email" className="form-control" type="text" placeholder="you@example.com" autoComplete="off" />
+              <input onChange={(e) => dispatch({ type: "emailImmediately", value: e.target.value })} id="email-register" name="email" className="form-control" type="text" placeholder="you@example.com" autoComplete="off" />
             </div>
             <div className="form-group">
               <label htmlFor="password-register" className="text-muted mb-1">
                 <small>Password</small>
               </label>
-              <input onChange={(e) => setPassword(e.target.value)} id="password-register" name="password" className="form-control" type="password" placeholder="Create a password" autoComplete="off" />
+              <input onChange={(e) => dispatch({ type: "passwordImmediately", value: e.target.value })} id="password-register" name="password" className="form-control" type="password" placeholder="Create a password" autoComplete="off" />
             </div>
             <button type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
-              Sign up for ComplexApp
+              {state.registrationButton}
             </button>
           </form>
         </div>
