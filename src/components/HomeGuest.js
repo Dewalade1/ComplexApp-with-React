@@ -30,7 +30,7 @@ function HomeGuest() {
       hasErrors: false,
       errorMessage: "",
     },
-    isLoggingIn: false,
+    isRegistering: false,
     registrationButton: "Sign up for ComplexApp",
     submitCount: 0,
   };
@@ -56,7 +56,7 @@ function HomeGuest() {
           draft.username.errorMessage = "Username must be at least 3 characters long";
         }
 
-        if (!draft.hasErrors) {
+        if (!draft.hasErrors && !action.noRequest) {
           draft.username.checkCount++;
         }
         break;
@@ -79,7 +79,7 @@ function HomeGuest() {
           draft.email.errorMessage = "Your email is not valid";
         }
 
-        if (!draft.email.hasErrors) {
+        if (!draft.email.hasErrors && !action.noRequest) {
           draft.email.checkCount++;
         }
         break;
@@ -108,16 +108,19 @@ function HomeGuest() {
         break;
       case "registrationStarted":
         draft.registrationButton = "Registering new user...";
-        draft.isLoggingIn = true;
+        draft.isRegistering = true;
         break;
       case "loginrequeststarted":
         draft.registrationButton = "Logging in...";
         break;
       case "loginrequestfinished":
-        draft.isLoggingIn = false;
+        draft.isRegistering = false;
         draft.registrationButton = "Welcome...";
         break;
       case "submitForm":
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors) {
+          draft.submitCount++;
+        }
         break;
       default:
         return draft;
@@ -179,8 +182,35 @@ function HomeGuest() {
     }
   }, [state.email.checkCount]);
 
+  useEffect(() => {
+    if (state.submitCount) {
+      const request = Axios.CancelToken.source();
+      async function submitRequest() {
+        try {
+          dispatch({ type: "registrationStarted" });
+          const response = await Axios.post("/register", { username: state.username.value, email: state.email.value, password: state.password.value }, { cancelToken: request.token });
+          dispatch({ type: "loginrequeststarted" });
+          appDispatch({ type: "login", userData: response.data });
+          dispatch({ type: "loginrequestfinished" });
+          appDispatch({ type: "flashMessage", value: ["alert-success", "Congrats! Welcome to your new account"] });
+        } catch (e) {
+          appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not complete user registeration"] });
+        }
+      }
+      submitRequest();
+      return () => request.cancel();
+    }
+  }, [state.submitCount]);
+
   function handleSubmit(e) {
     e.preventDefault();
+    dispatch({ type: "usernameImmediately", value: state.username.value });
+    dispatch({ type: "usernameAfterDelay", value: state.username.value, noRequest: true });
+    dispatch({ type: "emailImmediately", value: state.email.value });
+    dispatch({ type: "emailAfterDelay", value: state.email.value, noRequest: true });
+    dispatch({ type: "passwordImmediately", value: state.password.value });
+    dispatch({ type: "passwordAfterDelay", value: state.password.value });
+    dispatch({ type: "submitForm" });
   }
 
   return (
@@ -225,7 +255,7 @@ function HomeGuest() {
                 <div className="alert alert-danger small liveValidateMessage">{state.password.errorMessage}</div>
               </CSSTransition>
             </div>
-            <button type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
+            <button disabled={state.isRegistering} type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
               {state.registrationButton}
             </button>
           </form>
