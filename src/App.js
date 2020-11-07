@@ -74,6 +74,26 @@ function App() {
     }
   }, [state.loggedIn]);
 
+  // Check if user token has expired or not on first render
+  useEffect(() => {
+    if (state.loggedIn) {
+      const request = Axios.CancelToken.source();
+      async function checkTokenValidity() {
+        try {
+          const response = await Axios.post("/checkToken", { token: state.user.token }, { cancelToken: request.token });
+          if (!response.data) {
+            dispatch({ type: "logout" });
+            dispatch({ type: "flashMessage", value: ["alert-info", "Your session has expired. Kindly log in again."] });
+          }
+        } catch (e) {
+          dispatch({ type: "flashMessage", value: ["alert-danger", "Cannot login. Unable to verify user token."] });
+        }
+      }
+      checkTokenValidity();
+      return () => request.cancel();
+    }
+  }, []);
+
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
@@ -105,7 +125,7 @@ function App() {
                 <PageNotFound />
               </Route>
             </Switch>
-            {state.isSearchOpen ? <Search /> : ''}
+            {state.isSearchOpen ? <Search /> : ""}
             <Footer />
           </div>
         </BrowserRouter>
