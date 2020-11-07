@@ -11,14 +11,14 @@ function Search() {
     return () => document.removeEventListener("keyup", searchKeyPressHandler);
   }, []);
 
-  function searchKeyPressHandler (e) {
+  function searchKeyPressHandler(e) {
     if (e.keyCode == 27) {
-        appDispatch({type: "closeSearch"});
+      appDispatch({ type: "closeSearch" });
     }
   }
 
   return (
-    <div className="search-overlay">
+    <div>
       <div className="search-overlay-top shadow-sm">
         <div className="container container--narrow">
           <label htmlFor="live-search-field" className="search-overlay-icon">

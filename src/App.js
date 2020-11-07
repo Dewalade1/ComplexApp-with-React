@@ -2,6 +2,7 @@ import Axios from "axios";
 import { useImmerReducer } from "use-immer";
 import React, { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+import {CSSTransition} from "react-transition-group";
 
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
@@ -12,10 +13,10 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HomeGuest from "./components/HomeGuest";
 import LoadingIcon from "./components/LoadingIcon";
-import Search from "./components/Search";
 
 // Lazy loading components with React (speeds up loading)
 const About = lazy(() => import("./components/About"));
+// Lazyload live chat component
 const CreatePost = lazy(() => import("./components/CreatePost"));
 const EditPost = lazy(() => import("./components/EditPost"));
 const HomeLoggedIn = lazy(() => import("./components/HomeLoggedIn"));
@@ -23,6 +24,7 @@ const PageNotFound = lazy(() => import("./components/PageNotFound"));
 const Profile = lazy(() => import("./components/Profile"));
 const Terms = lazy(() => import("./components/Terms"));
 const ViewSinglePost = lazy(() => import("./components/ViewSinglePost"));
+const Search = lazy(() => import("./components/Search"));
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -130,7 +132,13 @@ function App() {
                 </Route>
               </Switch>
             </Suspense>
-            {state.isSearchOpen ? <Search /> : ""}
+            <CSSTransition in={state.isSearchOpen} timeout={330} unmountOnExit classNames="search-overlay">
+              <div className="search-overlay">
+                <Suspense fallback="">
+                  <Search />
+                </Suspense>
+              </div>
+            </CSSTransition>
             <Footer />
           </div>
         </BrowserRouter>
