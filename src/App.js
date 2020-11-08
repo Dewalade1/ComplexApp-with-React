@@ -2,12 +2,10 @@ import Axios from "axios";
 import { useImmerReducer } from "use-immer";
 import React, { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import {CSSTransition} from "react-transition-group";
+import { CSSTransition } from "react-transition-group";
 
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
-
-import "./App.css";
 import FlashMessages from "./components/FlashMessages";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -26,7 +24,7 @@ const Terms = lazy(() => import("./components/Terms"));
 const ViewSinglePost = lazy(() => import("./components/ViewSinglePost"));
 const Search = lazy(() => import("./components/Search"));
 
-Axios.defaults.baseURL = "http://localhost:8080";
+Axios.defaults.baseURL = process.env.BACKENDURL || "https://backend-for-complexapp.herokuapp.com";
 
 function App() {
   const initialState = {

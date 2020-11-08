@@ -8,11 +8,14 @@
 
 # production
 /build
+/dist
 
 #Secret files
 my-secrets.txt
 
 # misc
+2.0.0
+.env
 .DS_Store
 .env.local
 .env.development.local
