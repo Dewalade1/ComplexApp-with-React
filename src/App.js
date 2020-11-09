@@ -24,7 +24,7 @@ const Terms = lazy(() => import("./components/Terms"));
 const ViewSinglePost = lazy(() => import("./components/ViewSinglePost"));
 const Search = lazy(() => import("./components/Search"));
 
-Axios.defaults.baseURL = process.env.BACKENDURL || "https://backend-for-complexapp.herokuapp.com";
+Axios.defaults.baseURL = "https://backend-for-complexapp.herokuapp.com" || process.env.BACKENDURL;
 
 function App() {
   const initialState = {

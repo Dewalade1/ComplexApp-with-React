@@ -8,6 +8,7 @@
 
 # production
 /build
+/dist
 
 #Secret files
 my-secrets.txt
