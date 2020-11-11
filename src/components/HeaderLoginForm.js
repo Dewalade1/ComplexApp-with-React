@@ -26,7 +26,7 @@ function HeaderLoginForm(props) {
   }
 
   return (
-    <form onSubmit={handleLogin} name="Login" data-netlify="true" className="mb-0 pt-2 pt-md-0">
+    <form onSubmit={handleLogin} name="Login" netlify data-netlify="true" className="mb-0 pt-2 pt-md-0">
       <div className="row align-items-center">
         <div className="col-md mr-0 pr-md-0 mb-3 mb-md-0">
           <input onChange={(e) => setUsername(e.target.value)} name="username" className="form-control form-control-sm input-dark" type="text" placeholder="Username" autoComplete="off" />
