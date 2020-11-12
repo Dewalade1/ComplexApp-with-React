@@ -22,12 +22,10 @@ function ProfilePosts() {
         console.log("[Error] Couldn't load posts or the request was cancelled");
       }
     }
-    fetchPosts();
 
-    return (() => {
-      ourCancelToken.cancel();
-    })
-  }, []);
+    fetchPosts();
+    return () => ourCancelToken.cancel();
+  }, [username]);
 
   if (isLoading) return <LoadingIcon />;
 
