@@ -1,11 +1,12 @@
 import Axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { NavLink, useParams, Switch, Route } from "react-router-dom";
 import { useImmer } from "use-immer";
 
 import Page from "./Page";
 import StateContext from "../StateContext";
 import ProfilePosts from "./ProfilePosts";
+import ProfileFollowLists from "./ProfileFollowLists";
 import DispatchContext from "../DispatchContext";
 
 function Profile() {
@@ -121,19 +122,29 @@ function Profile() {
         )}
       </h2>
 
-      <div className="profile-nav nav nav-tabs pt-2 mb-4">
-        <Link to="#" className="active nav-item nav-link">
-          Posts: {state.profileData.counts.postCount}
-        </Link>
-        <Link to="#" className="nav-item nav-link">
-          Followers: {state.profileData.counts.followerCount}
-        </Link>
-        <Link to="#" className="nav-item nav-link">
-          Following: {state.profileData.counts.followingCount}
-        </Link>
+      <div className="profile-nav nav nav-pills nav-fill pt-2 mb-4">
+        <NavLink exact to={`/profile/${state.profileData.profileUsername}`} className="nav-item nav-link">
+          {state.profileData.counts.postCount} Posts
+        </NavLink>
+        <NavLink to={`/profile/${state.profileData.profileUsername}/followers`} className="nav-item nav-link">
+          {state.profileData.counts.followerCount} Followers
+        </NavLink>
+        <NavLink to={`/profile/${state.profileData.profileUsername}/following`} className="nav-item nav-link">
+          {state.profileData.counts.followingCount} Following
+        </NavLink>
       </div>
 
-      <ProfilePosts />
+      <Switch>
+        <Route path="/profile/:username" exact>
+          <ProfilePosts />
+        </Route>
+        <Route path="/profile/:username/followers">
+          <ProfileFollowLists type="followers"/>
+        </Route>
+        <Route path="/profile/:username/following">
+          <ProfileFollowLists type="following"/>
+        </Route>
+      </Switch>
     </Page>
   );
 }
