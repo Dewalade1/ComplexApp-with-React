@@ -1,7 +1,7 @@
 import Axios from "axios";
 import React, { useContext, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import {useImmer} from "use-immer";
+import { useImmer } from "use-immer";
 
 import Page from "./Page";
 import StateContext from "../StateContext";
@@ -31,31 +31,32 @@ function Profile() {
         });
       } catch (e) {
         console.log("[Error] Could not fetch data or user left the page before load was completed");
+        appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not fetch post"] });
       }
     }
     fetchData();
 
-    return ( () => {
+    return () => {
       ourCancelToken.cancel();
-    })
+    };
   }, [username]);
 
   useEffect(() => {
     if (state.startFollowingRequestCount) {
-      setState( draft => {
+      setState(draft => {
         draft.followActionLoading = true;
       });
 
       const request = Axios.CancelToken.source();
       async function startFollowing() {
-        try{
-          const response = await Axios.post(`/addFollow/${state.profileData.profileUsername}`, { cancelToken: request.token });
-          setState( draft => {
+        try {
+          const response = await Axios.post(`/addFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
+          setState(draft => {
             draft.profileData.isfollowing = true;
             draft.profileData.counts.followerCount++;
             draft.followActionLoading = false;
           });
-          appDispatch({type: "flashMessage", value: ["alert-success", `You now follow ${state.profileData.profileUsername}`]});
+          appDispatch({ type: "flashMessage", value: ["alert-success", `You now follow ${state.profileData.profileUsername}`] });
         } catch (e) {
           draft.followActionLoading = false;
           appDispatch({ type: "flashMessage", value: ["alert-danger", `could not follow ${state.profileData.profileUsername}`] });
@@ -66,22 +67,25 @@ function Profile() {
     }
   }, [state.startFollowingRequestCount]);
 
-  useEffect( () => {
+  useEffect(() => {
     if (state.stopFollowingRequestCount) {
+      setState(draft => {
+        draft.unfollowActionLoading = true;
+      });
+
       const request = Axios.CancelToken.source();
       async function stopFollowing() {
         try {
-          const response = await Axios.post(`/removeFollow/${state.profileData.profileUsername}`, {cancelToken: request.token});
-          setState( draft => {
-            draft.profileData = response.data;
+          const response = await Axios.post(`/removeFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
+          setState(draft => {
             draft.profileData.isfollowing = false;
             draft.profileData.counts.followerCount--;
             draft.unfollowActionLoading = false;
           });
-          appDispatch({type:"flashMessage", value: ["alert-success", `You no longer follow ${state.profileData.profileUsername}`]});
+          appDispatch({ type: "flashMessage", value: ["alert-success", `You no longer follow ${state.profileData.profileUsername}`] });
         } catch (e) {
           draft.unfollowActionLoading = false;
-          appDispatch({type: "flashMessage", value: ["alert-danger", `Could not unfollow ${state.profileData.profileUsername}`]});
+          appDispatch({ type: "flashMessage", value: ["alert-danger", `Could not unfollow ${state.profileData.profileUsername}`] });
         }
       }
       stopFollowing();
@@ -89,14 +93,14 @@ function Profile() {
     }
   }, [state.stopFollowingRequestCount]);
 
-  function followHandler () {
-    setState( draft => {
+  function followHandler() {
+    setState(draft => {
       draft.startFollowingRequestCount++;
     });
   }
 
-  function unfollowHandler () {
-    setState( draft => {
+  function unfollowHandler() {
+    setState(draft => {
       draft.stopFollowingRequestCount++;
     });
   }
