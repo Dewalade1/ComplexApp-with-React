@@ -15,10 +15,9 @@ function Profile() {
   const { username } = useParams();
   const [state, setState] = useImmer({
     followActionLoading: false,
-    unfollowActionLoading: false,
     startFollowingRequestCount: 0,
     stopFollowingRequestCount: 0,
-    profileData: { profileUsername: "...", profileAvatar: appState.user.avatar, isfollowing: false, counts: { postCount: "", followingCount: "", followerCount: "" } },
+    profileData: { profileUsername: "...", profileAvatar: appState.user.avatar, isFollowing: false, counts: { postCount: "", followingCount: "", followerCount: "" } },
   });
 
   useEffect(() => {
@@ -26,20 +25,17 @@ function Profile() {
 
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token, CancelToken: ourCancelToken.token });
+        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token, cancelToken: ourCancelToken.token });
         setState(draft => {
           draft.profileData = response.data;
         });
       } catch (e) {
-        console.log("[Error] Could not fetch data or user left the page before load was completed");
-        appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not fetch post"] });
+        appDispatch({ type: "flashMessage", value: ["alert-danger",`Could not fetch ${username}'s posts or you left the page before the load was completed`] });
       }
     }
     fetchData();
 
-    return () => {
-      ourCancelToken.cancel();
-    };
+    return () => ourCancelToken.cancel();
   }, [username]);
 
   useEffect(() => {
@@ -51,9 +47,9 @@ function Profile() {
       const request = Axios.CancelToken.source();
       async function startFollowing() {
         try {
-          const response = await Axios.post(`/addFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
+          await Axios.post(`/addFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
           setState(draft => {
-            draft.profileData.isfollowing = true;
+            draft.profileData.isFollowing = true;
             draft.profileData.counts.followerCount++;
             draft.followActionLoading = false;
           });
@@ -71,21 +67,21 @@ function Profile() {
   useEffect(() => {
     if (state.stopFollowingRequestCount) {
       setState(draft => {
-        draft.unfollowActionLoading = true;
+        draft.followActionLoading = true;
       });
 
       const request = Axios.CancelToken.source();
       async function stopFollowing() {
         try {
-          const response = await Axios.post(`/removeFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
+          await Axios.post(`/removeFollow/${state.profileData.profileUsername}`, { token: appState.user.token, cancelToken: request.token });
           setState(draft => {
-            draft.profileData.isfollowing = false;
+            draft.profileData.isFollowing = false;
             draft.profileData.counts.followerCount--;
-            draft.unfollowActionLoading = false;
+            draft.followActionLoading = false;
           });
           appDispatch({ type: "flashMessage", value: ["alert-success", `You no longer follow ${state.profileData.profileUsername}`] });
         } catch (e) {
-          draft.unfollowActionLoading = false;
+          draft.followActionLoading = false;
           appDispatch({ type: "flashMessage", value: ["alert-danger", `Could not unfollow ${state.profileData.profileUsername}`] });
         }
       }
@@ -107,16 +103,16 @@ function Profile() {
   }
 
   return (
-    <Page title="Your Profile">
+    <Page title={`${appState.user.username == state.profileData.profileUsername ? "Your" : state.profileData.profileUsername + "'s"} Profile`}>
       <h2>
-        <img className="avatar-small" src={state.profileData.profileAvatar} alt="Your Avatar" /> {state.profileData.profileUsername}
-        {appState.loggedIn && !state.profileData.isfollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
+        <img className="avatar-small border border-dark" src={state.profileData.profileAvatar} alt="Your Avatar" /> {state.profileData.profileUsername}
+        {appState.loggedIn && !state.profileData.isFollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
           <button onClick={followHandler} disabled={state.followActionLoading} className="btn btn-outline-primary btn-sm ml-2">
             Follow <i className="fas fa-user-plus"></i>
           </button>
         )}
-        {appState.loggedIn && state.profileData.isfollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
-          <button onClick={unfollowHandler} disabled={state.unfollowActionLoading} className="btn btn-outline-dark btn-sm ml-2">
+        {appState.loggedIn && state.profileData.isFollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
+          <button onClick={unfollowHandler} disabled={state.followActionLoading} className="btn btn-outline-dark btn-sm ml-2">
             Unfollow <i className="fas fa-user-times"></i>
           </button>
         )}
@@ -124,13 +120,15 @@ function Profile() {
 
       <div className="profile-nav nav nav-pills nav-fill pt-2 mb-4">
         <NavLink exact to={`/profile/${state.profileData.profileUsername}`} className="nav-item nav-link">
-          {state.profileData.counts.postCount} Posts
+          {state.profileData.counts.postCount}
+          {state.profileData.counts.postCount == 1 ? " Post" : " Posts"}
         </NavLink>
         <NavLink to={`/profile/${state.profileData.profileUsername}/followers`} className="nav-item nav-link">
-          {state.profileData.counts.followerCount} Followers
+          {state.profileData.counts.followerCount}
+          {state.profileData.counts.followerCount == 1 ? " Follower" : " Followers"}
         </NavLink>
         <NavLink to={`/profile/${state.profileData.profileUsername}/following`} className="nav-item nav-link">
-          {state.profileData.counts.followingCount} Following
+          {state.profileData.counts.followingCount} {state.profileData.counts.followingCount == 1 ? " Following" : " Followings"}
         </NavLink>
       </div>
 
@@ -139,10 +137,10 @@ function Profile() {
           <ProfilePosts />
         </Route>
         <Route path="/profile/:username/followers">
-          <ProfileFollowLists type="followers"/>
+          <ProfileFollowLists type="followers" />
         </Route>
         <Route path="/profile/:username/following">
-          <ProfileFollowLists type="following"/>
+          <ProfileFollowLists type="following" />
         </Route>
       </Switch>
     </Page>
