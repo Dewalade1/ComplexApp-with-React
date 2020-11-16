@@ -1,9 +1,10 @@
 import Axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useImmer } from "use-immer";
 
+import Post from "./Post";
 import DispatchContext from "../DispatchContext";
+import NetworkError from "./NetworkError";
 
 function Search() {
   const appDispatch = useContext(DispatchContext);
@@ -50,6 +51,7 @@ function Search() {
           });
         } catch (e) {
           appDispatch({ type: "flashMessage", value: ["alert-danger", "Could not get results"] });
+          <NetworkError/>
         }
       }
       getSearchResult();
@@ -94,25 +96,14 @@ function Search() {
                   <strong>Results</strong> ({state.results.length} {state.results.length > 1 ? "items" : "item"} found)
                 </div>
                 {state.results.map((post) => {
-                  const date = new Date(post.createdDate);
-                  const dateFormated = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-                  return (
-                    <Link onClick={() => appDispatch({ type: "closeSearch" })} key={post._id} to={`/posts/${post._id}`} className="list-group-item list-group-item-action">
-                      <img className="avatar-tiny" src={post.author.avatar} alt="avatar of creator of post #1" /> <strong>{post.title}</strong>
-                      <span className="text-muted small">
-                        {" "}
-                        by {post.author.username} on {dateFormated}
-                      </span>
-                    </Link>
-                  );
+                  return <Post post={post} key={post._id} onClick={() => appDispatch({ type: "closeSearch" })} />;
                 })}
               </div>
             )}
             {!Boolean(state.results.length) && (
               <div className="alert alert-danger text-center shadow-sm">
                 <i className="mb-3 far fa-frown fa-9x"></i>
-                <p>Sorry, we can't seem to find what you are looking for</p>
+                <p>Sorry, we can't seem to find what you are looking for. Try searching something else.</p>
               </div>
             )}
           </div>
