@@ -2,6 +2,7 @@ import Axios from "axios";
 import React, { useEffect, useState, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import Post from "./Post";
 import LoadingIcon from "./LoadingIcon";
 import DispatchContext from "../DispatchContext";
 import NetworkError from "./NetworkError";
@@ -35,15 +36,7 @@ function ProfilePosts() {
   return (
     <div className="list-group">
       {posts.map((post) => {
-        const date = new Date(post.createdDate);
-        const dateFormated = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-        return (
-          <Link key={post._id} to={`/posts/${post._id}`} className="list-group-item list-group-item-action list-group-item-info">
-            <img className="avatar-tiny" src={post.author.avatar} alt={`${post.author.username}'s avatar`} /> <strong>{post.title}</strong>
-            <span className="text-muted small"> on {dateFormated}</span>
-          </Link>
-        );
+        return <Post post={post} key={post._id} author={true}/>
       })}
       {!Boolean(posts.length) && (
         <div className="alert alert-secondary text-center shadow-sm">

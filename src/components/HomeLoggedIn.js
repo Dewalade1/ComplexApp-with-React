@@ -1,9 +1,9 @@
 import Axios from "axios";
-import {Link} from "react-router-dom";
 import { useImmer } from "use-immer";
 import React, { useContext, useEffect } from "react";
 
 import Page from "./Page";
+import Post from "./Post";
 import StateContext from "../StateContext";
 import DispatchContext from "../DispatchContext";
 import NetworkError from "./NetworkError";
@@ -49,18 +49,7 @@ function HomeLoggedIn() {
           <h2 className="icon text-left mb-4">Here's what's been happening...</h2>
           <div className="list-group">
             {state.feed.map((post) => {
-              const date = new Date(post.createdDate);
-              const formatedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-              return (
-                <Link key={post._id} to={`/posts/${post._id}`} onClick={() => appDispatch({ type: "closeSearch" })} className="list-group-item list-group-item-action list-group-item-info">
-                  <img className="avatar-small border border-dark" src={post.author.avatar} alt={`${post.author.username}'s avatar`} /> <strong>{post.title}</strong>
-                  <span className="text-muted small">
-                    {" |  "}
-                     {post.author.username} on {formatedDate}
-                  </span>
-                  <p className="mt-3">{post.body}</p>
-                </Link>
-              );
+              return <Post post={post} key={post._id} content={post.body}/>
             })}
           </div>
         </>
