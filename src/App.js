@@ -4,6 +4,7 @@ import React, { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 
+import Chat from "./components/Chat";
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 import FlashMessages from "./components/FlashMessages";
@@ -37,6 +38,7 @@ function App() {
       avatar: localStorage.getItem("userAvatar"),
     },
     isSearchOpen: false,
+    isChatOpen: false,
   };
 
   function ourReducer(draft, action) {
@@ -57,6 +59,12 @@ function App() {
         break;
       case "closeSearch":
         draft.isSearchOpen = false;
+        break;
+      case "toggleChat":
+        draft.isChatOpen = !draft.isChatOpen;
+        break;
+      case "closeChat":
+        draft.isChatOpen = false;
         break;
       default:
         break;
@@ -137,6 +145,7 @@ function App() {
                 </Suspense>
               </div>
             </CSSTransition>
+            <Chat />
             <Footer />
           </div>
         </BrowserRouter>
