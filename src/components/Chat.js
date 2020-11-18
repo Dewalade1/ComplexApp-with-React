@@ -1,4 +1,5 @@
 import React, { useContext, useRef, useEffect } from "react";
+import { useImmer } from "use-immer";
 
 import StateContext from "../StateContext";
 import DispatchContext from "../DispatchContext";
@@ -7,6 +8,10 @@ function Chat() {
   const chatField = useRef(null);
   const appState = useContext(StateContext);
   const appDispatch = useContext(DispatchContext);
+  const [state, setState] = useImmer({
+    fieldValue: "",
+    chatMessages: []
+  });
 
   useEffect(() => {
     if (appState.isChatOpen) {
@@ -14,43 +19,68 @@ function Chat() {
     }
   }, [appState.isChatOpen]);
 
+  function fieldChangeHandler(e) {
+    const value = e.target.value;
+    setState((draft) => {
+      draft.fieldValue = value;
+    });
+  }
+
+  function submitHandler(e) {
+    e.preventDefault();
+    setState((draft) => {
+      draft.chatMessages.push({ message: draft.fieldValue, username: appState.user.username, avatar: appState.user.avatar });
+      draft.fieldValue = "";
+    });
+  }
+
   return (
     <div id="chat-wrapper" className={"chat-wrapper shadow border-top border-left border-right " + (appState.isChatOpen ? "chat-wrapper--is-visible" : "")}>
       <div className="chat-title-bar bg-primary">
-        Chat
+        Chat<i className="far fa-keyboard"></i>
         <span onClick={() => appDispatch({ type: "closeChat" })} className="chat-title-bar-close">
           <i className="fas fa-times-circle"></i>
         </span>
       </div>
       <div id="chat" className="chat-log">
-        <div className="chat-self">
-          <div className="chat-message">
-            <div className="chat-message-inner">
-              <a href="#">
-                <strong>You:</strong>
-              </a>
-              Hey, how are you?
-            </div>
-          </div>
-          <img className="chat-avatar avatar-tiny" src="https://gravatar.com/avatar/b9408a09298632b5151200f3449434ef?s=128" />
-        </div>
-
-        <div className="chat-other">
-          <a href="#">
-            <img className="avatar-tiny" src="https://gravatar.com/avatar/b9216295c1e3931655bae6574ac0e4c2?s=128" />
-          </a>
-          <div className="chat-message">
-            <div className="chat-message-inner">
-              <a href="#">
-                <strong>barksalot:</strong>
-              </a>
-              Hey, I am good, how about you?
-            </div>
-          </div>
-        </div>
+        {state.chatMessages.map((message, index) => {
+          if (message.username == appState.user.username) {
+            return (
+              <div className="chat-self">
+                <div className="chat-message">
+                  <div className="chat-message-inner">
+                    <a href={`/profile/${message.username}`}>
+                      <strong>You:</strong>
+                    </a>
+                    {message.message}
+                  </div>
+                </div>
+                <a href={`/profile/${message.username}`}>
+                  <img className="chat-avatar avatar-tiny" src={message.avatar} />
+                </a>
+              </div>
+            );
+          } else {
+            return (
+              <div className="chat-other">
+                <a href={`/profile/${message.username}`}>
+                  <img className="avatar-tiny" src={message.avatar} />
+                </a>
+                <div className="chat-message">
+                  <div className="chat-message-inner">
+                    <a href={`/profile/${message.username}`}>
+                      <strong>{message.username}:</strong>
+                    </a>
+                    {message.message}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+        })}
       </div>
-      <form id="chatForm" className="chat-form border-top">
-        <input ref={chatField} type="text" className="chat-field" id="chatField" placeholder="Type a message…" autoComplete="off" />
+      <form id="chatForm" className="chat-form border-top" onSubmit={submitHandler}>
+        <input value={state.fieldValue} ref={chatField} onChange={fieldChangeHandler} type="text" className="chat-field" id="chatField" placeholder="Type a message…" autoComplete="off" />
       </form>
     </div>
   );
