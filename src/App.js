@@ -4,7 +4,6 @@ import React, { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 
-import Chat from "./components/Chat";
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 import FlashMessages from "./components/FlashMessages";
@@ -15,7 +14,7 @@ import LoadingIcon from "./components/LoadingIcon";
 
 // Lazy loading components with React (speeds up loading)
 const About = lazy(() => import("./components/About"));
-// Lazyload live chat component
+const Chat = lazy(() => import("./components/Chat"));
 const CreatePost = lazy(() => import("./components/CreatePost"));
 const EditPost = lazy(() => import("./components/EditPost"));
 const HomeLoggedIn = lazy(() => import("./components/HomeLoggedIn"));
@@ -39,6 +38,7 @@ function App() {
     },
     isSearchOpen: false,
     isChatOpen: false,
+    unreadMessageCount: 0
   };
 
   function ourReducer(draft, action) {
@@ -65,6 +65,12 @@ function App() {
         break;
       case "closeChat":
         draft.isChatOpen = false;
+        break;
+      case "incrementUnreadMessageCount":
+        draft.unreadMessageCount++;
+        break;
+      case "clearUnreadMessageCount":
+        draft.unreadMessageCount = 0;
         break;
       default:
         break;
@@ -145,7 +151,9 @@ function App() {
                 </Suspense>
               </div>
             </CSSTransition>
-            <Chat />
+            <Suspense fallback="">
+              {state.loggedIn && <Chat />}
+            </Suspense>
             <Footer />
           </div>
         </BrowserRouter>

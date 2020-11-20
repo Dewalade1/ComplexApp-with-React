@@ -31,9 +31,9 @@ function UserLoggedIn(props) {
       </Link>
       <ReactTooltip place="bottom" id="search" className="custom-tooltip" />
       {"  "}
-      <span data-tip="Chat" onClick={() => appDispatch({type: "toggleChat"})} data-for="chat" className="mr-2 header-chat-icon text-white">
+      <span data-tip="Chat" onClick={() => appDispatch({ type: "toggleChat" })} data-for="chat" className={"mr-2 header-chat-icon " + (appState.unreadMessageCount > 0 ? "text-warning" : "text-white")}>
         <i className="fas fa-comment"></i>
-        <span className="chat-count-badge text-white"> </span>
+        {appState.unreadMessageCount > 0 ? <span className="chat-count-badge text-white"> {appState.unreadMessageCount < 10 ? appState.unreadMessageCount : '9+'} </span> : ""}
       </span>
       <ReactTooltip place="bottom" id="chat" className="custom-tooltip" />
       {"  "}
